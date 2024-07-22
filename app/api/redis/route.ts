@@ -4,8 +4,6 @@ import RedisService from '@/app/services/redis-service';
 
 const redisService = RedisService.getInstance();
 
-export const runtime = 'edge';
-
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const key = searchParams.get('key');
