@@ -13,6 +13,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts"
   },
   "dependencies": {
+    "@upstash/redis": "^1.33.0",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18"
