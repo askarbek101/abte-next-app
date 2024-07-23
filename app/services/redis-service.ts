@@ -38,9 +38,11 @@ class RedisService {
   }
 
   // add method read sync
-public readSync(key: string): any {
-    return this.client.get(key);
+  public readSync(key: string): any {
+      return this.client.get(key);
+  }
 }
-}
+
+export const runtime = 'edge';
 
 export default RedisService;
