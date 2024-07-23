@@ -1,6 +1,8 @@
 import Image from "next/image";
 import RedisService from "@/services/redis-service";
 
+export const runtime = 'edge';
+
 export default function Home() {
 
   const redis = RedisService.getInstance();
