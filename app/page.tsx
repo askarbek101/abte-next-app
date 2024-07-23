@@ -1,5 +1,5 @@
 import Image from "next/image";
-import RedisService from "./services/redis-service";
+import RedisService from "@/services/redis-service";
 
 export default function Home() {
 
