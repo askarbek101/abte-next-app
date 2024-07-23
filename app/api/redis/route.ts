@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import RedisService from '@/app/services/redis-service';
 
-const redisService = RedisService.getInstance();
+export const runtime = 'edge'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data = await redisService.read(key);
+    const data = await RedisService.getInstance().read(key);
     if (data) {
       return NextResponse.json({ data }, { status: 200 });
     } else {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await redisService.create(key, value);
+    await RedisService.getInstance().create(key, value);
     return NextResponse.json({ message: 'Key created successfully' }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'key was not created' }, { status: 500 });
@@ -49,7 +49,7 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
-    await redisService.update(key, value);
+    await RedisService.getInstance().update(key, value);
     return NextResponse.json({ message: 'Key updated successfully' }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'Key was not updated' }, { status: 500 });
@@ -65,7 +65,7 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    await redisService.delete(key);
+    await RedisService.getInstance().delete(key);
     return NextResponse.json({ message: 'Key deleted successfully' }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'key was not deleted' }, { status: 500 });
