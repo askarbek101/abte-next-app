@@ -21,8 +21,8 @@ export class PostgresService {
       return PostgresService.instance;
     }
 
-    public async getVersion(): Promise<Record<string, any>[]> {
-        const response = await this.client`SELECT version()`;
+    public async getCities(): Promise<Record<string, any>[]> {
+        const response = await this.client`SELECT * from cities`;
         return response;
     }
 }
