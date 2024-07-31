@@ -1,47 +1,59 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import { pgTable, serial, varchar } from "drizzle-orm/pg-core";
-import { eq } from "drizzle-orm";
-import postgres from "postgres";
-import { genSaltSync, hashSync } from "bcrypt-ts";
+import { Client } from '@neondatabase/serverless';
+import { genSaltSync, hashSync } from 'bcrypt-ts';
 
-let client = postgres(`${process.env.POSTGRES_DATABASE_URL!}`);
-let db = drizzle(client);
+const client = new Client({
+  connectionString: process.env.POSTGRES_DATABASE_URL,
+});
+
+client.connect();
+
+async function ensureTableExists() {
+  try {
+    const result = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'User'
+      );`);
+
+    if (!result.rows[0].exists) {
+      await client.query(`
+        CREATE TABLE "User" (
+          id SERIAL PRIMARY KEY,
+          email VARCHAR(64),
+          password VARCHAR(64)
+        );`);
+    }
+  } catch (error) {
+    console.error('Error ensuring table exists:', error);
+    throw error;
+  }
+}
 
 export async function getUser(email: string) {
-  const users = await ensureTableExists();
-  return await db.select().from(users).where(eq(users.email, email));
+  await ensureTableExists();
+  try {
+    const result = await client.query('SELECT * FROM "User" WHERE email = $1', [email]);
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw error;
+  }
 }
 
 export async function createUser(email: string, password: string) {
-  const users = await ensureTableExists();
-  let salt = genSaltSync(10);
-  let hash = hashSync(password, salt);
+  await ensureTableExists();
+  const salt = genSaltSync(10);
+  const hash = hashSync(password, salt);
 
-  return await db.insert(users).values({ email, password: hash });
-}
-
-async function ensureTableExists() {
-  const result = await client`
-    SELECT EXISTS (
-      SELECT FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name = 'User'
-    );`;
-
-  if (!result[0].exists) {
-    await client`
-      CREATE TABLE "User" (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(64),
-        password VARCHAR(64)
-      );`;
+  try {
+    const result = await client.query(
+      'INSERT INTO "User" (email, password) VALUES ($1, $2) RETURNING *',
+      [email, hash]
+    );
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
   }
-
-  const table = pgTable("User", {
-    id: serial("id").primaryKey(),
-    email: varchar("email", { length: 64 }),
-    password: varchar("password", { length: 64 }),
-  });
-
-  return table;
 }
