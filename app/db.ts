@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import postgres from "postgres";
 import { genSaltSync, hashSync } from "bcrypt-ts";
 
-let client = postgres(`${process.env.POSTGRES_URL!}`);
+let client = postgres(`${process.env.POSTGRES_DATABASE_URL!}`);
 let db = drizzle(client);
 
 export async function getUser(email: string) {

@@ -7,7 +7,7 @@ import { SubmitButton } from '@/app/submit-button';
 export default function Login() {
   async function register(formData: FormData) {
     'use server';
-    console.log(process.env.POSTGRES_URL);
+    console.log(process.env.POSTGRES_DATABASE_URL);
     let email = formData.get('email') as string;
     let password = formData.get('password') as string;
 
