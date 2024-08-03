@@ -59,24 +59,6 @@ export async function createTask(input: CreateTaskSchema) {
       }
 
         console.log("🚀 Task created")
-
-      // Delete a task to keep the total number of tasks constant
-      // await tx.delete(tasks).where(
-      //   eq(
-      //     tasks.id,
-      //     (
-      //       await tx
-      //         .select({
-      //           id: tasks.id,
-      //         })
-      //         .from(tasks)
-      //         .limit(1)
-      //         .where(not(eq(tasks.id, newTask.id)))
-      //         .orderBy(asc(tasks.createdAt))
-      //         .then(takeFirstOrThrow)
-      //     ).id
-      //   )
-      // )
     })
 
     revalidatePath("/")
