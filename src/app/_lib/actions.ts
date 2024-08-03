@@ -11,6 +11,8 @@ import { getErrorMessage } from "@/lib/handle-error"
 
 import { generateRandomTask } from "./utils"
 import type { CreateTaskSchema, UpdateTaskSchema } from "./validations"
+import { generateOrderDetailPdf } from "@/generator/pdf/core"
+import { uploadPdfToUploadthing } from "@/uploadthing/service"
 
 export async function seedTasks(input: { count: number }) {
   const count = input.count ?? 100
@@ -35,15 +37,17 @@ export async function seedTasks(input: { count: number }) {
 export async function createTask(input: CreateTaskSchema) {
   noStore()
   try {
+    const code = `TASK-${customAlphabet("0123456789", 4)()}`;
     await db.transaction(async (tx) => {
       console.log("🚀 Creating task...")
+
 
       // create try catch block
       try {      
         const newTask = await tx
         .insert(tasks)
         .values({
-          code: `TASK-${customAlphabet("0123456789", 4)()}`,
+          code: code,
           title: input.title,
           status: input.status,
           label: input.label,
@@ -63,13 +67,17 @@ export async function createTask(input: CreateTaskSchema) {
 
     revalidatePath("/")
 
+    
+    const pdfBytes = await generateOrderDetailPdf(input);
+    await uploadPdfToUploadthing(pdfBytes, code + '.pdf');
+
     return {
-      data: null,
+      code: code,
       error: null,
     }
   } catch (err) {
     return {
-      data: null,
+      code: null,
       error: getErrorMessage(err),
     }
   }
