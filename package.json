@@ -39,6 +39,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@t3-oss/env-nextjs": "^0.11.0",
     "@tanstack/react-table": "^8.17.3",
+    "@uploadthing/react": "^6.7.2",
     "axios": "^1.7.3",
     "babel-plugin-react-compiler": "0.0.0-experimental-696af53-20240625",
     "bcrypt-ts": "^5.0.0",
@@ -53,6 +54,7 @@
     "next": "15.0.0-rc.0",
     "next-auth": "5.0.0-beta.4",
     "next-themes": "^0.3.0",
+    "pdf-lib": "^1.17.1",
     "postgres": "^3.4.4",
     "react": "19.0.0-rc-fb9a90fa48-20240614",
     "react-day-picker": "^8.10.1",
@@ -62,6 +64,7 @@
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "uploadthing": "^6.13.2",
     "vaul": "^0.9.1",
     "zod": "^3.23.8"
   },
