@@ -43,9 +43,9 @@ export function TasksTable({ tasksPromise }: TasksTableProps) {
    */
   const filterFields: DataTableFilterField<Task>[] = [
     {
-      label: "Title",
-      value: "title",
-      placeholder: "Filter titles...",
+      label: "Description",
+      value: "description",
+      placeholder: "Filter descriptions...",
     },
     {
       label: "Status",
@@ -66,7 +66,7 @@ export function TasksTable({ tasksPromise }: TasksTableProps) {
         icon: getPriorityIcon(priority),
         withCount: true,
       })),
-    },
+    }
   ]
 
   const { table } = useDataTable({

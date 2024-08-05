@@ -10,9 +10,11 @@ import { customAlphabet } from "nanoid"
 import { getErrorMessage } from "@/lib/handle-error"
 
 import { generateRandomTask } from "./utils"
-import type { CreateTaskSchema, UpdateTaskSchema } from "./validations"
+import { createTaskSchema, type CreateTaskSchema, type UpdateTaskSchema } from "./validations"
 import { generateOrderDetailPdf } from "@/generator/pdf/core"
 import { uploadPdfToUploadthing } from "@/uploadthing/service"
+import { calcultePrice, calculteVolume } from "@/calculator/core"
+import { InputIcon } from "@radix-ui/react-icons"
 
 export async function seedTasks(input: { count: number }) {
   const count = input.count ?? 100
@@ -42,16 +44,25 @@ export async function createTask(input: CreateTaskSchema) {
       console.log("🚀 Creating task...")
 
 
+      input.volume = await calculteVolume(input)
+      input.price = await calcultePrice(input)
+
       // create try catch block
       try {      
         const newTask = await tx
         .insert(tasks)
         .values({
           code: code,
-          title: input.title,
+          description: input.description,
           status: input.status,
           label: input.label,
           priority: input.priority,
+          height: input.height,
+          width: input.width,
+          length: input.length,
+          weight: input.weight,
+          volume: input.volume,
+          price: input.price,
         })
         .returning({
           id: tasks.id,
@@ -89,10 +100,41 @@ export async function updateTask(input: UpdateTaskSchema & { id: string }) {
     await db
       .update(tasks)
       .set({
-        title: input.title,
-        label: input.label,
+        description: input.description,
         status: input.status,
+        label: input.label,
         priority: input.priority,
+        height: input.height,
+        width: input.width,
+        length: input.length,
+        weight: input.weight,
+        volume: input.volume,
+        price: input.price,
+      })
+      .where(eq(tasks.id, input.id))
+
+      await updateVolumeAndPrice(input)
+
+    return {
+      data: null,
+      error: null,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: getErrorMessage(err),
+    }
+  }
+}
+
+async function updateVolumeAndPrice(input: UpdateTaskSchema & { id: string }) {
+  noStore()
+  try {
+    await db
+      .update(tasks)
+      .set({
+        volume: await calculteVolume(input),
+        price: await calcultePrice(input),
       })
       .where(eq(tasks.id, input.id))
 
@@ -112,22 +154,44 @@ export async function updateTask(input: UpdateTaskSchema & { id: string }) {
 
 export async function updateTasks(input: {
   ids: string[]
+  description?: Task["description"]
   label?: Task["label"]
   status?: Task["status"]
   priority?: Task["priority"]
+  height?: Task["height"]
+  width?: Task["width"]
+  length?: Task["length"]
+  weight?: Task["weight"]
+  volume?: Task["volume"]
+  price?: Task["price"]
 }) {
   noStore()
   try {
     await db
       .update(tasks)
       .set({
-        label: input.label,
+        description: input.description,
         status: input.status,
+        label: input.label,
         priority: input.priority,
+        height: input.height,
+        width: input.width,
+        length: input.length,
+        weight: input.weight,
+        volume: input.volume,
+        price: input.price,
       })
       .where(inArray(tasks.id, input.ids))
 
-    revalidatePath("/")
+      
+
+      await updateVolumeAndPrice({
+        height: input.height,
+        width: input.width,
+        length: input.length,
+        weight: input.weight,
+        id: input.ids[0],
+      } as UpdateTaskSchema & { id: string })
 
     return {
       data: null,

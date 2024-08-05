@@ -2,15 +2,17 @@
 
 import { createTask } from "@/app/_lib/actions"
 import { CreateTaskSchema } from "@/app/_lib/validations"
+import { calcultePrice, calculteVolume } from "@/calculator/core";
+import { he } from "@faker-js/faker";
 
 export async function POST(request: Request) {
     console.log(request)
 
     // get string title from request body json object
-    const { title } = await request.json() as { title: string };
-
+    const { description, height, width, length, weight } = await request.json() as { description: string, height: number, width: number, length: number, weight: number };
+    console.log(description)
     // check if all params are present
-    if (!title) {
+    if (!description) {
         return new Response(JSON.stringify({
             error: 'All params are required'
         }), {
@@ -22,10 +24,14 @@ export async function POST(request: Request) {
     }
 
     const task: CreateTaskSchema = {
-        title,
+        description,
         label: 'feature',
         status: 'todo',
-        priority: 'high'
+        priority: 'high',
+        height: height,
+        width: width,
+        length: length,
+        weight: weight,
     }
 
     const response = await createTask(task) as { code: string | null, error: string | null };

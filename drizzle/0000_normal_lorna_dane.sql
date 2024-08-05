@@ -19,12 +19,20 @@ END $$;
 CREATE TABLE IF NOT EXISTS "abte_tasks" (
 	"id" varchar(30) PRIMARY KEY NOT NULL,
 	"code" varchar(256),
-	"title" varchar(256),
+	"description" varchar(256),
 	"status" "abte_status" DEFAULT 'todo' NOT NULL,
 	"label" "abte_label" DEFAULT 'bug' NOT NULL,
 	"priority" "abte_priority" DEFAULT 'low' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT current_timestamp,
+
+	height integer NOT NULL DEFAULT 0,
+	width integer NOT NULL DEFAULT 0,
+	length integer NOT NULL DEFAULT 0,
+	weight integer NOT NULL DEFAULT 0,
+	volume integer NOT NULL DEFAULT 0,
+	price integer NOT NULL DEFAULT 0,
+	
 	CONSTRAINT "abte_tasks_code_unique" UNIQUE("code")
 );
 

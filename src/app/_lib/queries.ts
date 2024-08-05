@@ -12,7 +12,7 @@ import { type GetTasksSchema } from "./validations"
 
 export async function getTasks(input: GetTasksSchema) {
   noStore()
-  const { page, per_page, sort, title, status, priority, operator, from, to } =
+  const { page, per_page, sort, description, status, priority, height, width, length, weight, volume, price, operator, from, to } =
     input
 
   try {
@@ -31,10 +31,10 @@ export async function getTasks(input: GetTasksSchema) {
     const toDay = to ? sql`to_date(${to}, 'yyy-mm-dd')` : undefined
 
     const expressions: (SQL<unknown> | undefined)[] = [
-      title
+      description
         ? filterColumn({
-            column: tasks.title,
-            value: title,
+            column: tasks.description,
+            value: description,
           })
         : undefined,
       // Filter tasks by status
@@ -50,6 +50,54 @@ export async function getTasks(input: GetTasksSchema) {
         ? filterColumn({
             column: tasks.priority,
             value: priority,
+            isSelectable: true,
+          })
+        : undefined,
+      // Filter tasks by height
+      !!height
+        ? filterColumn({
+            column: tasks.height,
+            value: height.toString(),
+            isSelectable: true,
+          })
+        : undefined,
+      // Filter tasks by width
+      !!width
+        ? filterColumn({
+            column: tasks.width,
+            value: width.toString(),
+            isSelectable: true,
+          })
+        : undefined,
+      // Filter tasks by length
+      !!length
+        ? filterColumn({
+            column: tasks.length,
+            value: length.toString(),
+            isSelectable: true,
+          })
+        : undefined,
+      // Filter tasks by weight
+      !!weight
+        ? filterColumn({
+            column: tasks.weight,
+            value: weight.toString(),
+            isSelectable: true,
+          })
+        : undefined,
+      // Filter tasks by volume
+      !!volume
+        ? filterColumn({
+            column: tasks.volume,
+            value: volume.toString(),
+            isSelectable: true,
+          })
+        : undefined,
+      // Filter tasks by price
+      !!price
+        ? filterColumn({
+            column: tasks.price,
+            value: price.toString(),
             isSelectable: true,
           })
         : undefined,

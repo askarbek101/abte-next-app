@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { DoubleArea } from "@/components/ui/doublearea"
 import { type CreateTaskSchema } from "@/app/_lib/validations"
 
 interface CreateTaskFormProps
@@ -43,14 +44,82 @@ export function CreateTaskForm({
       >
         <FormField
           control={form.control}
-          name="title"
+          name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Do a kickflip"
                   className="resize-none"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="height"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Height</FormLabel>
+              <FormControl>
+                <DoubleArea
+                  placeholder="Enter height"
+                  text="cm"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="length"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Length</FormLabel>
+              <FormControl>
+                <DoubleArea
+                  placeholder="Enter length"
+                  text="cm"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="width"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Width</FormLabel>
+              <FormControl>
+                <DoubleArea
+                  placeholder="Enter width"
+                  text="cm"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="weight"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Weight</FormLabel>
+              <FormControl>
+                <DoubleArea
+                  placeholder="Enter weight"
+                  text="kg"
                   {...field}
                 />
               </FormControl>

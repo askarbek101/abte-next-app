@@ -67,9 +67,9 @@ export function getColumns(): ColumnDef<Task>[] {
       enableHiding: false,
     },
     {
-      accessorKey: "title",
+      accessorKey: "description",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title="Description" />
       ),
       cell: ({ row }) => {
         const label = tasks.label.enumValues.find(
@@ -80,7 +80,7 @@ export function getColumns(): ColumnDef<Task>[] {
           <div className="flex space-x-2">
             {label && <Badge variant="outline">{label}</Badge>}
             <span className="max-w-[31.25rem] truncate font-medium">
-              {row.getValue("title")}
+              {row.getValue("description")}
             </span>
           </div>
         )
@@ -143,6 +143,51 @@ export function getColumns(): ColumnDef<Task>[] {
       },
     },
     {
+      accessorKey: "volume",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Volume" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex space-x-2">
+            <span className="max-w-[31.25rem] truncate font-medium">
+              {row.getValue("volume")} mL
+            </span>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "weight",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Weight" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex space-x-2">
+            <span className="max-w-[31.25rem] truncate font-medium">
+              {row.getValue("weight")} kg
+            </span>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "price",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Price" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex space-x-2">
+            <span className="max-w-[31.25rem] truncate font-medium">
+              {row.getValue("price")} ₸
+            </span>
+          </div>
+        )
+      },
+    },
+    {
       accessorKey: "createdAt",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created At" />
@@ -194,6 +239,7 @@ export function getColumns(): ColumnDef<Task>[] {
                       onValueChange={(value) => {
                         startUpdateTransition(() => {
                           toast.promise(
+                            // @ts-ignore
                             updateTask({
                               id: row.original.id,
                               label: value as Task["label"],

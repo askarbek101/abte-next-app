@@ -37,6 +37,7 @@ import { Textarea } from "@/components/ui/textarea"
 
 import { updateTask } from "../_lib/actions"
 import { updateTaskSchema, type UpdateTaskSchema } from "../_lib/validations"
+import { DoubleArea } from "@/components/ui/doublearea"
 
 interface UpdateTaskSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
@@ -49,19 +50,27 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
   const form = useForm<UpdateTaskSchema>({
     resolver: zodResolver(updateTaskSchema),
     defaultValues: {
-      title: task.title ?? "",
+      description: task.description ?? "",
       label: task.label,
       status: task.status,
       priority: task.priority,
+      height: task.height,
+      width: task.width,
+      length: task.length,
+      weight: task.weight,
     },
   })
 
   React.useEffect(() => {
     form.reset({
-      title: task.title ?? "",
+      description: task.description ?? "",
       label: task.label,
       status: task.status,
       priority: task.priority,
+      height: task.height,
+      width: task.width,
+      length: task.length,
+      weight: task.weight,
     })
   }, [task, form])
 
@@ -99,10 +108,10 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
           >
             <FormField
               control={form.control}
-              name="title"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Do a kickflip"
@@ -110,6 +119,66 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="height"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Height</FormLabel>
+                  <DoubleArea
+                    placeholder="Enter height"
+                    className="h-8 w-40 lg:w-64"
+                    {...field}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="width"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Width</FormLabel>
+                  <DoubleArea
+                    placeholder="Enter width"
+                    className="h-8 w-40 lg:w-64"
+                    {...field}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="length"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Length</FormLabel>
+                  <DoubleArea
+                    placeholder="Enter length"
+                    className="h-8 w-40 lg:w-64"
+                    {...field}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="weight"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Weight</FormLabel>
+                  <DoubleArea
+                    placeholder="Enter weight"
+                    className="h-8 w-40 lg:w-64"
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
