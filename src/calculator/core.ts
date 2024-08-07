@@ -1,17 +1,16 @@
 import { CreateTaskSchema } from "@/app/_lib/validations";
 
-export async function calcultePrice(task: CreateTaskSchema) {
+export async function calcultePrice(volume: number, weight: number) {
     return Math.max(
-        task.volume ? task.volume * 2 : 0, 
-        task.weight ? task.weight * 0.5 : 0
+        volume ? volume * 2 : 0, 
+        weight ? weight * 0.5 : 0
     );
 }
 
-export async function calculteVolume(task: CreateTaskSchema) {
-    if (task.height && task.width && task.length) {
-        task.volume = task.height * task.width * task.length
-    }else{
-        task.volume = 0
+export async function calculateVolume(height: number, width: number, length: number) {
+    let volume: number = 0
+    if (height && width && length) {
+        volume = height * width * length
     }
-    return task.volume
+    return volume
 }

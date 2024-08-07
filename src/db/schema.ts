@@ -46,6 +46,7 @@ export const tasks = pgTable("tasks", {
   volume: integer("volume").notNull().default(0),
   price: integer("price").notNull().default(0),
   
+  invoice_url: varchar("invoice_url", { length: 256 }),
 })
 
 export type Task = typeof tasks.$inferSelect

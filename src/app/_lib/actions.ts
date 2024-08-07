@@ -13,7 +13,7 @@ import { generateRandomTask } from "./utils"
 import { createTaskSchema, type CreateTaskSchema, type UpdateTaskSchema } from "./validations"
 import { generateOrderDetailPdf } from "@/generator/pdf/core"
 import { uploadPdfToUploadthing } from "@/uploadthing/service"
-import { calcultePrice, calculteVolume } from "@/calculator/core"
+import { calculateVolume, calcultePrice } from "@/calculator/core"
 import { InputIcon } from "@radix-ui/react-icons"
 
 export async function seedTasks(input: { count: number }) {
@@ -43,9 +43,12 @@ export async function createTask(input: CreateTaskSchema) {
     await db.transaction(async (tx) => {
       console.log("🚀 Creating task...")
 
+      const pdfBytes = await generateOrderDetailPdf(input);
+      var data = await uploadPdfToUploadthing(pdfBytes, code + '.pdf');
+      input.invoice_url = data.data?.url;
 
-      input.volume = await calculteVolume(input)
-      input.price = await calcultePrice(input)
+      input.volume = await calculateVolume(input.height ?? 0, input.width ?? 0, input.length ?? 0)
+      input.price = await calcultePrice(input.volume, input.weight ?? 0)
 
       // create try catch block
       try {      
@@ -63,6 +66,7 @@ export async function createTask(input: CreateTaskSchema) {
           weight: input.weight,
           volume: input.volume,
           price: input.price,
+          invoice_url: input.invoice_url,
         })
         .returning({
           id: tasks.id,
@@ -79,8 +83,6 @@ export async function createTask(input: CreateTaskSchema) {
     revalidatePath("/")
 
     
-    const pdfBytes = await generateOrderDetailPdf(input);
-    await uploadPdfToUploadthing(pdfBytes, code + '.pdf');
 
     return {
       code: code,
@@ -97,6 +99,8 @@ export async function createTask(input: CreateTaskSchema) {
 export async function updateTask(input: UpdateTaskSchema & { id: string }) {
   noStore()
   try {
+    let volume = await calculateVolume(input.height ?? 0, input.width ?? 0, input.length ?? 0)
+    let price = await calcultePrice(volume, input.weight ?? 0)
     await db
       .update(tasks)
       .set({
@@ -108,33 +112,8 @@ export async function updateTask(input: UpdateTaskSchema & { id: string }) {
         width: input.width,
         length: input.length,
         weight: input.weight,
-        volume: input.volume,
-        price: input.price,
-      })
-      .where(eq(tasks.id, input.id))
-
-      await updateVolumeAndPrice(input)
-
-    return {
-      data: null,
-      error: null,
-    }
-  } catch (err) {
-    return {
-      data: null,
-      error: getErrorMessage(err),
-    }
-  }
-}
-
-async function updateVolumeAndPrice(input: UpdateTaskSchema & { id: string }) {
-  noStore()
-  try {
-    await db
-      .update(tasks)
-      .set({
-        volume: await calculteVolume(input),
-        price: await calcultePrice(input),
+        volume: volume,
+        price: price,
       })
       .where(eq(tasks.id, input.id))
 
@@ -151,6 +130,7 @@ async function updateVolumeAndPrice(input: UpdateTaskSchema & { id: string }) {
     }
   }
 }
+
 
 export async function updateTasks(input: {
   ids: string[]
@@ -167,6 +147,8 @@ export async function updateTasks(input: {
 }) {
   noStore()
   try {
+    let volume = await calculateVolume(input.height ?? 0, input.width ?? 0, input.length ?? 0)
+    let price = await calcultePrice(volume, input.weight ?? 0)
     await db
       .update(tasks)
       .set({
@@ -178,20 +160,13 @@ export async function updateTasks(input: {
         width: input.width,
         length: input.length,
         weight: input.weight,
-        volume: input.volume,
-        price: input.price,
+        volume: volume,
+        price: price,
       })
       .where(inArray(tasks.id, input.ids))
 
       
-
-      await updateVolumeAndPrice({
-        height: input.height,
-        width: input.width,
-        length: input.length,
-        weight: input.weight,
-        id: input.ids[0],
-      } as UpdateTaskSchema & { id: string })
+    revalidatePath("/")
 
     return {
       data: null,
@@ -207,12 +182,14 @@ export async function updateTasks(input: {
 
 export async function deleteTask(input: { id: string }) {
   try {
+    console.log('🚀 Deleting task...')
     await db.transaction(async (tx) => {
       await tx.delete(tasks).where(eq(tasks.id, input.id))
 
       // Create a new task for the deleted one
       await tx.insert(tasks).values(generateRandomTask())
     })
+    console.log('🚀 Task deleted')
 
     revalidatePath("/")
   } catch (err) {
@@ -225,12 +202,11 @@ export async function deleteTask(input: { id: string }) {
 
 export async function deleteTasks(input: { ids: string[] }) {
   try {
+    console.log('🚀 Deleting tasks...')
     await db.transaction(async (tx) => {
       await tx.delete(tasks).where(inArray(tasks.id, input.ids))
-
-      // Create new tasks for the deleted ones
-      await tx.insert(tasks).values(input.ids.map(() => generateRandomTask()))
     })
+    console.log('🚀 Tasks deleted')
 
     revalidatePath("/")
 

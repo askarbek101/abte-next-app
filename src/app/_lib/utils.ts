@@ -18,7 +18,7 @@ export function generateRandomTask(): Task {
   return {
     id: generateId(),
     code: `TASK-${customAlphabet("0123456789", 4)()}`,
-    title: faker.hacker
+    description: faker.hacker
       .phrase()
       .replace(/^./, (letter) => letter.toUpperCase()),
     status: faker.helpers.shuffle(tasks.status.enumValues)[0] ?? "todo",
@@ -26,7 +26,7 @@ export function generateRandomTask(): Task {
     priority: faker.helpers.shuffle(tasks.priority.enumValues)[0] ?? "low",
     createdAt: new Date(),
     updatedAt: new Date(),
-  }
+  } as Task
 }
 
 /**

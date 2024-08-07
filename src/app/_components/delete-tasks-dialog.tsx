@@ -48,7 +48,7 @@ export function DeleteTasksDialog({
   const isDesktop = useMediaQuery("(min-width: 640px)")
 
   function onDelete() {
-    return () => {
+    console.log('🚀 onDelete: Deleting tasks...')
       startDeleteTransition(async () => {
         const { error } = await deleteTasks({
           ids: tasks.map((task) => task.id),
@@ -63,7 +63,7 @@ export function DeleteTasksDialog({
         toast.success("Tasks deleted")
         onSuccess?.()
       })
-    }
+
   }
 
   if (isDesktop) {
@@ -102,7 +102,7 @@ export function DeleteTasksDialog({
                   aria-hidden="true"
                 />
               )}
-              Delete
+              Delete {tasks.length} {tasks.length > 1 ? 'tasks' : 'task'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -145,7 +145,7 @@ export function DeleteTasksDialog({
                 aria-hidden="true"
               />
             )}
-            Delete
+            Delete {tasks.length} {tasks.length > 1 ? 'tasks' : 'task'}
           </Button>
         </DrawerFooter>
       </DrawerContent>

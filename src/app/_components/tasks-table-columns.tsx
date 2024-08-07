@@ -203,6 +203,21 @@ export function getColumns(): ColumnDef<Task>[] {
         const [showDeleteTaskDialog, setShowDeleteTaskDialog] =
           React.useState(false)
 
+          async function downloadInvoice(invoice_url: string, filename: string) {
+            
+            console.log('📝 Downloading invoice...')
+            const response = await fetch(invoice_url);
+            const blob = await response.blob();
+            const file = new File([blob], filename+'.pdf', { type: 'application/pdf' });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename+'.pdf';
+            link.click();
+            URL.revokeObjectURL(url);
+            console.log('📝 Invoice downloaded successfully');
+          }
+
         return (
           <>
             <UpdateTaskSheet
@@ -231,6 +246,11 @@ export function getColumns(): ColumnDef<Task>[] {
                 <DropdownMenuItem onSelect={() => setShowUpdateTaskSheet(true)}>
                   Edit
                 </DropdownMenuItem>
+                {row.original.invoice_url && (
+                  <DropdownMenuItem onSelect={() => downloadInvoice(row.original.invoice_url!, row.original.code)}>
+                    Download Invoice
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
@@ -261,6 +281,41 @@ export function getColumns(): ColumnDef<Task>[] {
                           disabled={isUpdatePending}
                         >
                           {label}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuRadioGroup
+                      value={row.original.status}
+                      onValueChange={(value) => {
+                        startUpdateTransition(() => {
+                          toast.promise(
+                            // @ts-ignore
+                            updateTask({
+                              id: row.original.id,
+                              status: value as Task["status"],
+                            }),
+                            {
+                              loading: "Updating...",
+                              success: "Status updated",
+                              error: (err) => getErrorMessage(err),
+                            }
+                          )
+                        })
+                      }}
+                    >
+                      {tasks.status.enumValues.map((status) => (
+                        <DropdownMenuRadioItem
+                          key={status}
+                          value={status}
+                          className="capitalize"
+                          disabled={isUpdatePending}
+                        >
+                          {status}
                         </DropdownMenuRadioItem>
                       ))}
                     </DropdownMenuRadioGroup>

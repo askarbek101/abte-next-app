@@ -1,43 +1,51 @@
+
+'use server';
+
 import { CreateTaskSchema } from '@/app/_lib/validations';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { Color, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import path from 'path';
+import fs from 'fs';
+
 
 export async function generateOrderDetailPdf(orderDetails: CreateTaskSchema): Promise<Uint8Array> {
-  console.log('📝 Generating PDF...')
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([600, 750]);
-  const { width, height } = page.getSize();
-  
-  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  console.log('📝 Generating PDF...');
 
-  const drawText = (text: string, x: number, y: number, size = 12) => {
-    page.drawText(text, {
+  // Load the PDF template
+  const templatePath = path.join(process.cwd(), 'src', 'generator', 'pdf', 'FINAL_WAYBILL_TEMPLATE.pdf');
+  const templatePdfBytes = fs.readFileSync(templatePath);
+  const pdfDoc = await PDFDocument.load(templatePdfBytes);
+
+  // Get the first page of the document
+  const page = pdfDoc.getPages()[0];
+
+  // Embed the font
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  // Function to draw text
+  const drawText = (text: string, x: number, y: number, size: number = 12) => {
+    page!.drawText(text, {
       x,
       y,
       size,
-      font: helveticaFont,
+      font,
       color: rgb(0, 0, 0),
     });
   };
 
-  let yPosition = height - 20;
+  const drawRectangle = (x: number, y: number, width: number, height: number, backgroundColor: Color) => {
+    page!.drawRectangle({
+      x,
+      y,
+      width,
+      height,
+      color: backgroundColor,
+    });
+  };
 
-  drawText(`Order Number: ${orderDetails.title}`, 50, yPosition);
-  yPosition -= 20;
-  drawText(`Order Date: ${orderDetails.status}`, 50, yPosition);
-  yPosition -= 20;
-  drawText(`Customer Name: ${orderDetails.label}`, 50, yPosition);
-  yPosition -= 20;
-  drawText(`Customer Address: ${orderDetails.priority}`, 50, yPosition);
-  yPosition -= 40;
 
-  drawText('Items:', 50, yPosition);
-  yPosition -= 20;
-  drawText('Name', 50, yPosition);
-  drawText('Quantity', 250, yPosition);
-  drawText('Price', 400, yPosition);
-  yPosition -= 20;
+  drawRectangle(250, 700, 10, 50, rgb(0, 0, 0));
 
   const pdfBytes = await pdfDoc.save();
-  console.log('📝 PDF generated successfully')
+  console.log('📝 PDF generated successfully');
   return pdfBytes;
 }

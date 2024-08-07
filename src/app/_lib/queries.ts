@@ -12,7 +12,7 @@ import { type GetTasksSchema } from "./validations"
 
 export async function getTasks(input: GetTasksSchema) {
   noStore()
-  const { page, per_page, sort, description, status, priority, height, width, length, weight, volume, price, operator, from, to } =
+  const { page, per_page, sort, description, invoice_url, status, priority, height, width, length, weight, volume, price, operator, from, to } =
     input
 
   try {

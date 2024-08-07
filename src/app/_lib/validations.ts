@@ -7,6 +7,7 @@ export const searchParamsSchema = z.object({
   per_page: z.coerce.number().default(10),
   sort: z.string().optional(),
   description: z.string().optional(),
+  invoice_url: z.string().optional(),
   status: z.string().optional(),
   priority: z.string().optional(),
   height: z.number().optional(),
@@ -26,6 +27,7 @@ export type GetTasksSchema = z.infer<typeof getTasksSchema>
 
 export const createTaskSchema = z.object({
   description: z.string(),
+  invoice_url: z.string().optional(),
   label: z.enum(tasks.label.enumValues),
   status: z.enum(tasks.status.enumValues),
   priority: z.enum(tasks.priority.enumValues),
@@ -41,6 +43,7 @@ export type CreateTaskSchema = z.infer<typeof createTaskSchema>
 
 export const updateTaskSchema = z.object({
   description: z.string(),
+  invoice_url: z.string().optional(),
   label: z.enum(tasks.label.enumValues),
   status: z.enum(tasks.status.enumValues),
   priority: z.enum(tasks.priority.enumValues),
