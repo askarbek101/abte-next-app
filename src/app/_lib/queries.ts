@@ -210,6 +210,7 @@ export async function getTasks(input: GetTasksSchema) {
           phone: payer.phone,
           address: payer.address,
           role: getRole(payer.role),
+          password: payer.password,
         },
         recipient: {
           id: recipient.id,
@@ -218,6 +219,7 @@ export async function getTasks(input: GetTasksSchema) {
           phone: recipient.phone,
           address: recipient.address,
           role: getRole(recipient.role),
+          password: recipient.password,
         },
         sender: {
           id: sender.id,
@@ -226,6 +228,8 @@ export async function getTasks(input: GetTasksSchema) {
           phone: sender.phone,
           address: sender.address,
           role: getRole(sender.role),
+          password: sender.password,
+
         },
         createdAt: task.createdAt,
         updatedAt: task.updatedAt,

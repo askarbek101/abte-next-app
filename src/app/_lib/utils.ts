@@ -16,6 +16,8 @@ import { customAlphabet } from "nanoid"
 import { generateId } from "@/lib/id"
 import { KeyValuePair } from "tailwindcss/types/config"
 import { CreateTaskSchema } from "./validations"
+import { getDeliveryType, getLabel, getNumberFromString, getPriority, getStatus } from "@/utils/core"
+import { generateRandomPayer, generateRandomSender } from "@/utils/random"
 
 
 export function CreateTaskBySchema(input: CreateTaskSchema): Task {
@@ -25,9 +27,9 @@ export function CreateTaskBySchema(input: CreateTaskSchema): Task {
     code: code,
     description: input.description,
     invoice_url: input.invoice_url,
-    label: input.label,
-    status: input.status,
-    priority: input.priority,
+    label: getLabel(input.label),
+    status: getStatus(input.status),
+    priority: getPriority(input.priority),
     volume: input.volume,
     height: input.height,
     width: input.width,
@@ -36,10 +38,10 @@ export function CreateTaskBySchema(input: CreateTaskSchema): Task {
     price: input.price,
     from: input.from,
     to: input.to,
-    delivery_type: input.delivery_type,
-    payer: input.payer,
-    recipient: input.recipient,
-    sender: input.sender,
+    delivery_type: getDeliveryType(input.delivery_type),
+    payer: generateRandomPayer(),
+    recipient: generateRandomSender(),
+    sender: generateRandomSender(),
     insurance_cost: input.insurance_cost,
     number_of_packages: input.number_of_packages,
     value_of_goods: input.value_of_goods,

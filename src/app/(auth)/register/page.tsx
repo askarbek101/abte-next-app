@@ -1,24 +1,32 @@
 import Link from 'next/link';
 import { Form } from '@/components/form';
 import { redirect } from 'next/navigation';
-import { createUser, getUser } from '@/use-cases/users.use-case';
+import { createSender, getSender } from '@/use-cases/users.use-case';
 import { Button } from '@/components/ui/button';
+import { Role, Sender } from '@/types/core';
+import { randomUUID } from 'crypto';
+import { generateId } from '@/lib/id';
 
 export default function Login() {
   async function register(formData: FormData) {
     'use server';
     console.log(process.env.POSTGRES_DATABASE_URL);
-    let email = formData.get('email') as string;
-    let password = formData.get('password') as string;
 
-    console.log(email, password);
+    let sender : Sender = {
+      id: generateId(),
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+      phone: formData.get('phone') as string,
+      address: formData.get('address') as string,
+      role: Role.USER,
+    };
 
-    let user = await getUser(email);
-
-    if (user.length > 0) {
+    let users = await getSender(sender.email);
+    if (users.length > 0) {
       return 'User already exists'; // TODO: Handle errors with useFormStatus
     } else {
-      await createUser(email, password);
+      await createSender(sender);
       redirect('/login');
     }
   }

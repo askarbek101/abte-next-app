@@ -32,6 +32,7 @@ export async function POST(request: Request) {
         width: width,
         length: length,
         weight: weight,
+        
     }
 
     const response = await createTask(task) as { code: string | null, error: string | null };

@@ -20,6 +20,7 @@ export const SenderTable = pgTable('sender', {
   phone: varchar('phone', { length: 20 }).notNull(),
   address: text('address').notNull(),
   role: RoleEnum('role').notNull(),
+  password: varchar('password', { length: 255 }).notNull(),
 });
 
 export const PayerTable = pgTable('payer', {
@@ -31,6 +32,7 @@ export const PayerTable = pgTable('payer', {
   role: RoleEnum('role').notNull(),
   bin: varchar('bin', { length: 50 }).notNull(),
   abte_id: varchar('abte_id', { length: 50 }).notNull(),
+  password: varchar('password', { length: 255 }).notNull(),
 });
 
 export const RecipientTable = pgTable('recipient', {
@@ -40,6 +42,7 @@ export const RecipientTable = pgTable('recipient', {
   phone: varchar('phone', { length: 20 }).notNull(),
   address: text('address').notNull(),
   role: RoleEnum('role').notNull(),
+  password: varchar('password', { length: 255 }).notNull(),
 });
 
 export const TaskTable = pgTable('task', {
