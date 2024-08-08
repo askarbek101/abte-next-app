@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { CreateTaskSchema } from "./_lib/validations"
 import { generateOrderDetailPdf } from "@/generator/pdf/core"
-import { DeliveryType, Order, Priority, Role, Status } from "@/types/core"
-import { calculateVolume } from "@/calculator/core"
+import { DeliveryType, Task, Priority, Role, Status, Label } from "@/types/core"
+import { calculateVolume, calculatePrice } from "@/calculator/core"
 
 
 export default function HomePage() {
@@ -13,20 +13,28 @@ export default function HomePage() {
 
   async function handleClick() {
 
-    const order : Order = {
+
+    const height = 20
+    const width = 30
+    const length = 40
+    const weight = 50
+    const volume = await calculateVolume(height, width, length)
+    const price = await calculatePrice(volume, weight)
+
+    const order : Task = {
       id: "r6nIYPeTah4v23",
       code: "T1231",
       description: "Order Number",
       invoice_url: "https://utfs.io/f/0bd89e34-9195-4f1a-a545-4ee4ab1184e0-m8t5f8.pdf",
-      label: "1234567890",
+      label: Label.FEATURE,
       status: Status.CREATED,
       priority: Priority.LOW,
-      volume: await calculateVolume(20, 30, 40),
-      height: 20,
-      width: 30,
-      length: 40,
-      weight: 50,
-      price: await calculatePrice(20, 30, 40, 50),
+      volume: volume,
+      height: height,
+      width: width,
+      length: length,
+      weight: weight,
+      price: price,
       from: {
         id: "1",
         name: "Almaty"
@@ -65,8 +73,8 @@ export default function HomePage() {
       insurance_cost: 10,
       number_of_packages: 1,
       value_of_goods: 1000,
-      created_at: new Date(),
-      updated_at: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
     
     var pdfBytes = await generateOrderDetailPdf(order);
@@ -79,8 +87,5 @@ export default function HomePage() {
       <Button onClick={handleClick}>Go to Tasks</Button>
     </div>
   )
-}
-function calculatePrice(arg0: number, arg1: number, arg2: number, arg3: number): number | PromiseLike<number | undefined> | undefined {
-  throw new Error("Function not implemented.")
 }
 

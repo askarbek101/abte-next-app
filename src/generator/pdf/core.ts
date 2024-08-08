@@ -5,10 +5,10 @@ import { CreateTaskSchema } from '@/app/_lib/validations';
 import { Color, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import path from 'path';
 import fs from 'fs';
-import { CreateOrder, Order } from '@/types/core';
+import { CreateTask, Task } from '@/types/core';
 
 
-export async function generateOrderDetailPdf(orderDetails: Order): Promise<Uint8Array> {
+export async function generateOrderDetailPdf(orderDetails: Task): Promise<Uint8Array> {
   console.log('📝 Generating PDF...');
 
   // Load the PDF template
@@ -43,14 +43,14 @@ export async function generateOrderDetailPdf(orderDetails: Order): Promise<Uint8
   return pdfBytes;
 }
 
-function getFieldValueFromOrder(order: Order, field: string) {
+function getFieldValueFromOrder(order: Task, field: string) {
   switch (field) {
     case 'RECIPIENT_ADDRESS':
       return order.recipient.address;
     case 'WAYBILL_NUMBER':
       return order.id;
     case 'GENERATED_DATE_af_date':
-      return new Date().toLocaleDateString();
+      return order.createdAt.toLocaleDateString();
     case 'SENDER_NAME':
       return order.sender.name;
     case 'SENDER_ADDRESS':

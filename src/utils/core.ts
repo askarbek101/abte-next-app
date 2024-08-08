@@ -1,3 +1,8 @@
+
+import { CityTableType, PayerTableType, RecipientTableType, SenderTableType } from "@/db/schema";
+import { DeliveryType, Task, Priority, Role, Status, Label } from "@/types/core"
+import { PgColumn, PgEnumColumn } from "drizzle-orm/pg-core";
+
 export function formatPhoneNumber(phoneNumber: string): string {
     // Remove all non-digit characters
     const digitsOnly = phoneNumber.replace(/\D/g, '');
@@ -34,3 +39,72 @@ export function formatPhoneNumber(phoneNumber: string): string {
     
     return formattedNumber;
   }
+
+export function getLabel(label: string) {
+    switch (label) {
+        case "bug":
+            return Label.BUG
+        case "feature":
+            return Label.FEATURE
+        case "enhancement":
+            return Label.ENHANCEMENT
+        case "documentation":
+            return Label.DOCUMENTATION
+        default:
+            return Label.BUG
+    }
+}
+
+export function getStatus(status: string) {
+    switch (status) {
+      case "done":
+        return Status.DONE
+      case "in_progress":
+        return Status.IN_PROGRESS
+      case "todo":
+        return Status.TODO
+      case "cancelled":
+          return Status.CANCELLED
+      default:
+          return Status.TODO
+    }
+}
+
+export function getPriority(priority: string) {
+    switch (priority) {
+        case "low":
+            return Priority.LOW
+        case "medium":
+            return Priority.MEDIUM
+        case "high":
+            return Priority.HIGH
+        default:
+            return Priority.LOW
+    }
+}
+
+export function getRole(role: string) {
+    switch (role) {
+        case "admin":
+            return Role.ADMIN
+        case "user":
+            return Role.USER
+        default:
+            return Role.USER
+    }
+}
+
+export function getDeliveryType(delivery_type: string) {
+    switch (delivery_type) {
+        case "door_to_terminal":
+            return DeliveryType.DOOR_TO_TERMINAL
+        case "door_to_door":
+            return DeliveryType.DOOR_TO_DOOR
+        default:
+            return DeliveryType.DOOR_TO_DOOR
+    }
+}
+
+export function getNumberFromString(str: string) {
+  return parseInt(str) || -1;
+}

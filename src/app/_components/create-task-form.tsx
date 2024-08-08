@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { tasks } from "@/db/schema"
+import { TaskTable } from "@/db/schema"
 import { type UseFormReturn } from "react-hook-form"
 
 import {
@@ -141,7 +141,7 @@ export function CreateTaskForm({
                 </FormControl>
                 <SelectContent>
                   <SelectGroup>
-                    {tasks.label.enumValues.map((item) => (
+                    {TaskTable.label.enumValues.map((item) => (
                       <SelectItem
                         key={item}
                         value={item}
@@ -171,7 +171,7 @@ export function CreateTaskForm({
                 </FormControl>
                 <SelectContent>
                   <SelectGroup>
-                    {tasks.status.enumValues.map((item) => (
+                    {TaskTable.status.enumValues.map((item) => (
                       <SelectItem
                         key={item}
                         value={item}
@@ -201,7 +201,7 @@ export function CreateTaskForm({
                 </FormControl>
                 <SelectContent>
                   <SelectGroup>
-                    {tasks.priority.enumValues.map((item) => (
+                    {TaskTable.priority.enumValues.map((item) => (
                       <SelectItem
                         key={item}
                         value={item}

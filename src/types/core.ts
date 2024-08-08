@@ -1,15 +1,15 @@
-export interface CreateOrder {
+export interface CreateTask {
   description: string;
-  invoice_url?: string;
-  label: string;
+  invoice_url: string;
+  label: Label;
   status: Status;
   priority: Priority;
-  volume?: number;
-  height?: number;
-  width?: number;
-  length?: number;
-  weight?: number;
-  price?: number;
+  volume: number;
+  height: number;
+  width: number;
+  length: number;
+  weight: number;
+  price: number;
 
   // todo: need to add
   from: City;
@@ -23,16 +23,23 @@ export interface CreateOrder {
   value_of_goods: number;
 }
 
-export interface Order extends CreateOrder {
+export interface Task extends CreateTask {
     id: string;
     code: string
-    created_at: Date;
-    updated_at: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface City {
   id: string;
   name: string;
+}
+
+export enum Label {
+  BUG = 'bug',
+  FEATURE = 'feature',
+  ENHANCEMENT = 'enhancement',
+  DOCUMENTATION = 'documentation',
 }
 
 export enum DeliveryType {
@@ -41,12 +48,9 @@ export enum DeliveryType {
 }
 
 export enum Status {
-  CREATED = 'created',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
-  PENDING = 'pending',
-  IN_TRANSIT = 'in_transit',
-  DELIVERED = 'delivered',
+  DONE = 'done',
+  IN_PROGRESS = 'in_progress',
+  TODO = 'todo',
   CANCELLED = 'cancelled',
 }
 

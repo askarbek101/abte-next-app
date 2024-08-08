@@ -1,6 +1,6 @@
 import { CreateTaskSchema } from "@/app/_lib/validations";
 
-export async function calcultePrice(volume: number, weight: number) {
+export async function calculatePrice(volume: number, weight: number) {
     return Math.max(
         volume ? volume * 2 : 0, 
         weight ? weight * 0.5 : 0

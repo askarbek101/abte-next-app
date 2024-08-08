@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { tasks, type Task } from "@/db/schema"
+import { TaskTable } from "@/db/schema"
+import { Task } from "@/types/core"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useForm } from "react-hook-form"
@@ -200,7 +201,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
-                        {tasks.label.enumValues.map((item) => (
+                        {TaskTable.label.enumValues.map((item) => (
                           <SelectItem
                             key={item}
                             value={item}
@@ -233,7 +234,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
-                        {tasks.status.enumValues.map((item) => (
+                        {TaskTable.status.enumValues.map((item) => (
                           <SelectItem
                             key={item}
                             value={item}
@@ -266,7 +267,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
-                        {tasks.priority.enumValues.map((item) => (
+                        {TaskTable.priority.enumValues.map((item) => (
                           <SelectItem
                             key={item}
                             value={item}

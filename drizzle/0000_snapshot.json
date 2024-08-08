@@ -50,15 +50,15 @@
           "notNull": true,
           "default": "'low'"
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -104,7 +104,7 @@
       "schema": "public",
       "values": [
         "todo",
-        "in-progress",
+        "in_progress",
         "done",
         "canceled"
       ]

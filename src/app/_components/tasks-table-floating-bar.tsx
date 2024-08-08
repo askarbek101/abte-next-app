@@ -1,5 +1,6 @@
 import * as React from "react"
-import { tasks, type Task } from "@/db/schema"
+import { TaskTable} from "@/db/schema"
+import { Task } from "@/types/core"
 import {
   ArrowUpIcon,
   CheckCircledIcon,
@@ -135,7 +136,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
               </Tooltip>
               <SelectContent align="center">
                 <SelectGroup>
-                  {tasks.status.enumValues.map((status) => (
+                  {TaskTable.status.enumValues.map((status) => (
                     <SelectItem
                       key={status}
                       value={status}
@@ -192,7 +193,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
               </Tooltip>
               <SelectContent align="center">
                 <SelectGroup>
-                  {tasks.priority.enumValues.map((priority) => (
+                  {TaskTable.priority.enumValues.map((priority) => (
                     <SelectItem
                       key={priority}
                       value={priority}

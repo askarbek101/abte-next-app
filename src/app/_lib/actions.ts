@@ -2,58 +2,39 @@
 
 import { unstable_noStore as noStore, revalidatePath } from "next/cache"
 import { db } from "@/db/index"
-import { tasks, type Task } from "@/db/schema"
+import { TaskTable } from "@/db/schema"
+import { Task } from "@/types/core"
 import { takeFirstOrThrow } from "@/db/utils"
 import { asc, count, eq, inArray, not } from "drizzle-orm"
 import { customAlphabet } from "nanoid"
 
 import { getErrorMessage } from "@/lib/handle-error"
 
-import { generateRandomTask } from "./utils"
-import { createTaskSchema, type CreateTaskSchema, type UpdateTaskSchema } from "./validations"
+import { CreateTaskBySchema } from "./utils"
+import { type CreateTaskSchema, type UpdateTaskSchema } from "./validations"
+import { calculateVolume, calculatePrice } from "@/calculator/core"
 import { generateOrderDetailPdf } from "@/generator/pdf/core"
 import { uploadPdfToUploadthing } from "@/uploadthing/service"
-import { calculateVolume, calcultePrice } from "@/calculator/core"
-import { InputIcon } from "@radix-ui/react-icons"
-
-export async function seedTasks(input: { count: number }) {
-  const count = input.count ?? 100
-
-  try {
-    const allTasks: Task[] = []
-
-    for (let i = 0; i < count; i++) {
-      allTasks.push(generateRandomTask())
-    }
-
-    await db.delete(tasks)
-
-    console.log("📝 Inserting tasks", allTasks.length)
-
-    await db.insert(tasks).values(allTasks).onConflictDoNothing()
-  } catch (err) {
-    console.error(err)
-  }
-}
 
 export async function createTask(input: CreateTaskSchema) {
   noStore()
   try {
-    const code = `TASK-${customAlphabet("0123456789", 4)()}`;
     await db.transaction(async (tx) => {
       console.log("🚀 Creating task...")
 
-      //const pdfBytes = await generateOrderDetailPdf(input);
-      //var data = await uploadPdfToUploadthing(pdfBytes, code + '.pdf');
-      //input.invoice_url = data.data?.url;
+      const task = await CreateTaskBySchema(input);
+
+      const pdfBytes = await generateOrderDetailPdf(task);
+      var data = await uploadPdfToUploadthing(pdfBytes, task.code + '.pdf');
+      input.invoice_url = data.data?.url;
 
       input.volume = await calculateVolume(input.height ?? 0, input.width ?? 0, input.length ?? 0)
-      input.price = await calcultePrice(input.volume, input.weight ?? 0)
+      input.price = await calculatePrice(input.volume, input.weight ?? 0)
 
       // create try catch block
       try {      
         const newTask = await tx
-        .insert(tasks)
+        .insert(TaskTable)
         .values({
           code: code,
           description: input.description,
@@ -100,9 +81,9 @@ export async function updateTask(input: UpdateTaskSchema & { id: string }) {
   noStore()
   try {
     let volume = await calculateVolume(input.height ?? 0, input.width ?? 0, input.length ?? 0)
-    let price = await calcultePrice(volume, input.weight ?? 0)
+    let price = await calculatePrice(volume, input.weight ?? 0)
     await db
-      .update(tasks)
+      .update(TaskTable)
       .set({
         description: input.description,
         status: input.status,
@@ -115,7 +96,7 @@ export async function updateTask(input: UpdateTaskSchema & { id: string }) {
         volume: volume,
         price: price,
       })
-      .where(eq(tasks.id, input.id))
+      .where(eq(TaskTable.id, input.id))
 
     revalidatePath("/")
 

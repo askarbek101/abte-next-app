@@ -64,7 +64,7 @@ interface UseDataTableProps<TData, TValue> {
    *     value: "status",
    *     options: [
    *       { label: "Todo", value: "todo" },
-   *       { label: "In Progress", value: "in-progress" },
+   *       { label: "In Progress", value: "in_progress" },
    *       { label: "Done", value: "done" },
    *       { label: "Canceled", value: "canceled" }
    *     ]

@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { tasks, type Task } from "@/db/schema"
+import { TaskTable } from "@/db/schema"
+import { Task } from "@/types/core"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { type ColumnDef } from "@tanstack/react-table"
 import { toast } from "sonner"
@@ -30,6 +31,7 @@ import { updateTask } from "../_lib/actions"
 import { getPriorityIcon, getStatusIcon } from "../_lib/utils"
 import { DeleteTasksDialog } from "./delete-tasks-dialog"
 import { UpdateTaskSheet } from "./update-task-sheet"
+import { getStatus, getPriority } from "@/utils/core"
 
 export function getColumns(): ColumnDef<Task>[] {
   return [
@@ -72,7 +74,7 @@ export function getColumns(): ColumnDef<Task>[] {
         <DataTableColumnHeader column={column} title="Description" />
       ),
       cell: ({ row }) => {
-        const label = tasks.label.enumValues.find(
+        const label = TaskTable.label.enumValues.find(
           (label) => label === row.original.label
         )
 
@@ -92,13 +94,13 @@ export function getColumns(): ColumnDef<Task>[] {
         <DataTableColumnHeader column={column} title="Status" />
       ),
       cell: ({ row }) => {
-        const status = tasks.status.enumValues.find(
+        const status = TaskTable.status.enumValues.find(
           (status) => status === row.original.status
         )
 
         if (!status) return null
 
-        const Icon = getStatusIcon(status)
+        const Icon = getStatusIcon(getStatus(status))
 
         return (
           <div className="flex w-[6.25rem] items-center">
@@ -120,13 +122,13 @@ export function getColumns(): ColumnDef<Task>[] {
         <DataTableColumnHeader column={column} title="Priority" />
       ),
       cell: ({ row }) => {
-        const priority = tasks.priority.enumValues.find(
+        const priority = TaskTable.priority.enumValues.find(
           (priority) => priority === row.original.priority
         )
 
         if (!priority) return null
 
-        const Icon = getPriorityIcon(priority)
+        const Icon = getPriorityIcon(getPriority(priority))
 
         return (
           <div className="flex items-center">
@@ -273,7 +275,7 @@ export function getColumns(): ColumnDef<Task>[] {
                         })
                       }}
                     >
-                      {tasks.label.enumValues.map((label) => (
+                      {TaskTable.label.enumValues.map((label) => (
                         <DropdownMenuRadioItem
                           key={label}
                           value={label}
@@ -308,7 +310,7 @@ export function getColumns(): ColumnDef<Task>[] {
                         })
                       }}
                     >
-                      {tasks.status.enumValues.map((status) => (
+                      {TaskTable.status.enumValues.map((status) => (
                         <DropdownMenuRadioItem
                           key={status}
                           value={status}
