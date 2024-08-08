@@ -43,9 +43,9 @@ export async function createTask(input: CreateTaskSchema) {
     await db.transaction(async (tx) => {
       console.log("🚀 Creating task...")
 
-      const pdfBytes = await generateOrderDetailPdf(input);
-      var data = await uploadPdfToUploadthing(pdfBytes, code + '.pdf');
-      input.invoice_url = data.data?.url;
+      //const pdfBytes = await generateOrderDetailPdf(input);
+      //var data = await uploadPdfToUploadthing(pdfBytes, code + '.pdf');
+      //input.invoice_url = data.data?.url;
 
       input.volume = await calculateVolume(input.height ?? 0, input.width ?? 0, input.length ?? 0)
       input.price = await calcultePrice(input.volume, input.weight ?? 0)
