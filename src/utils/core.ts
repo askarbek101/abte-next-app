@@ -1,9 +1,18 @@
+'use server'
 
-import { CityTableType, PayerTableType, RecipientTableType, SenderTableType } from "@/db/schema";
 import { DeliveryType, Task, Priority, Role, Status, Label } from "@/types/core"
-import { PgColumn, PgEnumColumn } from "drizzle-orm/pg-core";
+import { CityTableSelect, PayerTableSelect, RecipientTableSelect, SenderTableSelect, TaskTable, TaskTableInsert, TaskTableSelect } from "@/db/schema"
+import { uploadPdfToUploadthing } from "@/uploadthing/service"
+import { generateTaskPdfByTaskInsert } from "@/generator/pdf/core"
+import { calculatePrice, calculateVolume } from "@/calculator/core"
+import { db } from "@/db"
+import { eq } from "drizzle-orm"
+import { CreateTaskSchema, UpdateTaskSchema } from "@/app/_lib/validations"
+import { customAlphabet } from "nanoid"
+import { getCity } from "@/app/_lib/queries"
+import { getDeliveryType, getLabel, getPriority, getStatus } from "@/app/_lib/utils"
 
-export function formatPhoneNumber(phoneNumber: string): string {
+export async function formatPhoneNumber(phoneNumber: string): Promise<string> {
     // Remove all non-digit characters
     const digitsOnly = phoneNumber.replace(/\D/g, '');
     
@@ -40,71 +49,82 @@ export function formatPhoneNumber(phoneNumber: string): string {
     return formattedNumber;
   }
 
-export function getLabel(label: string) {
-    switch (label) {
-        case "bug":
-            return Label.BUG
-        case "feature":
-            return Label.FEATURE
-        case "enhancement":
-            return Label.ENHANCEMENT
-        case "documentation":
-            return Label.DOCUMENTATION
-        default:
-            return Label.BUG
-    }
-}
 
-export function getStatus(status: string) {
-    switch (status) {
-      case "done":
-        return Status.DONE
-      case "in_progress":
-        return Status.IN_PROGRESS
-      case "todo":
-        return Status.TODO
-      case "cancelled":
-          return Status.CANCELLED
-      default:
-          return Status.TODO
-    }
-}
-
-export function getPriority(priority: string) {
-    switch (priority) {
-        case "low":
-            return Priority.LOW
-        case "medium":
-            return Priority.MEDIUM
-        case "high":
-            return Priority.HIGH
-        default:
-            return Priority.LOW
-    }
-}
-
-export function getRole(role: string) {
-    switch (role) {
-        case "admin":
-            return Role.ADMIN
-        case "user":
-            return Role.USER
-        default:
-            return Role.USER
-    }
-}
-
-export function getDeliveryType(delivery_type: string) {
-    switch (delivery_type) {
-        case "door_to_terminal":
-            return DeliveryType.DOOR_TO_TERMINAL
-        case "door_to_door":
-            return DeliveryType.DOOR_TO_DOOR
-        default:
-            return DeliveryType.DOOR_TO_DOOR
-    }
-}
-
-export function getNumberFromString(str: string) {
+export async function getNumberFromString(str: string) {
   return parseInt(str) || -1;
 }
+
+
+export async function GetCreateTaskBySchema(input: CreateTaskSchema): Promise<TaskTableInsert> {
+  const code = `TASK-${customAlphabet("0123456789", 4)()}`;
+  const from = await getCity(input.from);
+  const to = await getCity(input.to);    
+
+  if (!from || !to) {
+    throw new Error("City not found")
+  }
+
+  const task : TaskTableInsert = {
+    code: code,
+    description: input.description,
+    label: getLabel(input.label),
+    status: getStatus(input.status),
+    priority: getPriority(input.priority),
+    height: input.height.toString(),
+    width: input.width.toString(),
+    length: input.length.toString(),
+    weight: input.weight.toString(),
+    from: from.id,
+    to: to.id,
+    delivery_type: getDeliveryType(input.delivery_type),
+    payer: input.payer.id,
+    recipient: input.recipient.id,
+    sender: input.sender.id,
+    insurance_cost: input.insurance_cost.toString(),
+    number_of_packages: input.number_of_packages,
+    value_of_goods: input.value_of_goods.toString(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    price: '0',
+    volume: '0',
+    invoice_url: "",
+  }
+  const pdfBytes = await generateTaskPdfByTaskInsert(task);
+  var data = await uploadPdfToUploadthing(pdfBytes, task.code + '.pdf');
+
+  task.invoice_url = data.data?.url ?? "";
+  task.volume = await calculateVolume(input.height ?? 0, input.width ?? 0, input.length ?? 0).toString();
+  task.price = await calculatePrice(input.volume, input.weight ?? 0).toString();
+
+  return task;
+}
+
+export async function GetUpdateTaskBySchema(input: UpdateTaskSchema & {id: string}): Promise<TaskTableInsert> {
+  const task : TaskTableInsert = {
+    id: input.id,
+    code: input.code,
+    description: input.description,
+    status: input.status,
+    label: input.label,
+    priority: input.priority,
+    height: input.height.toString(),
+    width: input.width.toString(),
+    length: input.length.toString(),
+    weight: input.weight.toString(),
+    volume: input.volume.toString(),
+    price: input.price.toString(),
+    invoice_url: input.invoice_url,
+    updatedAt: new Date(),
+    from: input.from,
+    to: input.to,
+    payer: input.payer.id,
+    recipient: input.recipient.id,
+    sender: input.sender.id,
+    delivery_type: input.delivery_type,
+    insurance_cost: input.insurance_cost.toString(),
+    number_of_packages: input.number_of_packages,
+    value_of_goods: input.value_of_goods.toString(),
+  }
+  return task;
+}
+

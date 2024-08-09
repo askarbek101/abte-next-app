@@ -6,9 +6,78 @@ import { Color, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import path from 'path';
 import fs from 'fs';
 import { CreateTask, Task } from '@/types/core';
+import { TaskTableInsert, TaskTableSelect } from '@/db/schema';
+import { getDeliveryType, getLabel, getNumberFromString, getPriority, getRole, getStatus } from '@/utils/core';
+import { getCity, getPayer, getRecipient, getSender } from '@/app/_lib/queries';
 
+export async function generateTaskPdfByTaskInsert(orderDetails: TaskTableInsert){
+  const from = await getCity(orderDetails.from);
+  const to = await getCity(orderDetails.to);
+  const payer = await getPayer(orderDetails.payer);
+  const recipient = await getRecipient(orderDetails.recipient);
+  const sender = await getSender(orderDetails.sender);
 
-export async function generateOrderDetailPdf(orderDetails: Task): Promise<Uint8Array> {
+  if (!from || !to || !payer || !recipient || !sender) {
+    throw new Error("City, payer, recipient or sender not found");
+  }
+
+  const task: Task = {
+    id: orderDetails.id ?? "",
+    delivery_type: getDeliveryType(orderDetails.delivery_type),
+    code: orderDetails.code,
+    description: orderDetails.description,
+    invoice_url: orderDetails.invoice_url,
+    label: getLabel(orderDetails.label),
+    status: getStatus(orderDetails.status),
+    priority: getPriority(orderDetails.priority),
+    volume: getNumberFromString(orderDetails.volume),
+    height: getNumberFromString(orderDetails.height),
+    width: getNumberFromString(orderDetails.width),
+    length: getNumberFromString(orderDetails.length),
+    weight: getNumberFromString(orderDetails.weight),
+    price: getNumberFromString(orderDetails.price),
+    from: from,
+    to: to,
+    payer: {
+      id: payer.id,
+      name: payer.name,
+      bin: payer.bin,
+      abte_id: payer.abte_id,
+      email: payer.email,
+      phone: payer.phone,
+      address: payer.address,
+      role: getRole(payer.role),
+      password: '',
+    },
+    recipient: {
+      id: recipient.id,
+      name: recipient.name,
+      email: recipient.email,
+      phone: recipient.phone,
+      address: recipient.address,
+      role: getRole(recipient.role),
+      password: '',
+    },
+    sender: {
+      id: sender.id,
+      name: sender.name,
+      email: sender.email,
+      phone: sender.phone,
+      address: sender.address,
+      role: getRole(sender.role),
+      password: '',
+    },
+    insurance_cost: getNumberFromString(orderDetails.insurance_cost),
+    number_of_packages: orderDetails.number_of_packages,
+    value_of_goods: getNumberFromString(orderDetails.value_of_goods),
+    createdAt: orderDetails.createdAt ?? new Date(),
+    updatedAt: orderDetails.updatedAt ?? new Date(),
+  }
+
+  return generateTaskPdfByTask(task);
+}
+
+export async function generateTaskPdfByTask(orderDetails: Task): Promise<Uint8Array> {
   console.log('📝 Generating PDF...');
 
   // Load the PDF template

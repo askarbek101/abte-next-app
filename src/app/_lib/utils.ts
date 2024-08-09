@@ -1,6 +1,4 @@
-import { TaskTable } from "@/db/schema"
-import { Task } from "@/types/core"
-import { faker } from "@faker-js/faker"
+import { DeliveryType, Label, Priority, Role, Status, Task } from "@/types/core"
 import {
   ArrowDownIcon,
   ArrowRightIcon,
@@ -13,41 +11,76 @@ import {
 } from "@radix-ui/react-icons"
 import { customAlphabet } from "nanoid"
 
-import { generateId } from "@/lib/id"
 import { KeyValuePair } from "tailwindcss/types/config"
-import { CreateTaskSchema } from "./validations"
-import { getDeliveryType, getLabel, getNumberFromString, getPriority, getStatus } from "@/utils/core"
-import { generateRandomPayer, generateRandomSender } from "@/utils/random"
 
 
-export function CreateTaskBySchema(input: CreateTaskSchema): Task {
-  const code = `TASK-${customAlphabet("0123456789", 4)()}`;
-  return {
-    id: generateId(),
-    code: code,
-    description: input.description,
-    invoice_url: input.invoice_url,
-    label: getLabel(input.label),
-    status: getStatus(input.status),
-    priority: getPriority(input.priority),
-    volume: input.volume,
-    height: input.height,
-    width: input.width,
-    length: input.length,
-    weight: input.weight,
-    price: input.price,
-    from: input.from,
-    to: input.to,
-    delivery_type: getDeliveryType(input.delivery_type),
-    payer: generateRandomPayer(),
-    recipient: generateRandomSender(),
-    sender: generateRandomSender(),
-    insurance_cost: input.insurance_cost,
-    number_of_packages: input.number_of_packages,
-    value_of_goods: input.value_of_goods,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+export function getLabel(label: string) {
+  switch (label) {
+      case "bug":
+          return Label.BUG
+      case "feature":
+          return Label.FEATURE
+      case "enhancement":
+          return Label.ENHANCEMENT
+      case "documentation":
+          return Label.DOCUMENTATION
+      default:
+          return Label.BUG
   }
+}
+
+export function getStatus(status: string) {
+  switch (status) {
+    case "done":
+      return Status.DONE
+    case "in_progress":
+      return Status.IN_PROGRESS
+    case "todo":
+      return Status.TODO
+    case "cancelled":
+        return Status.CANCELLED
+    default:
+        return Status.TODO
+  }
+}
+
+export function getPriority(priority: string) {
+  switch (priority) {
+      case "low":
+          return Priority.LOW
+      case "medium":
+          return Priority.MEDIUM
+      case "high":
+          return Priority.HIGH
+      default:
+          return Priority.LOW
+  }
+}
+
+export function getRole(role: string) {
+  switch (role) {
+      case "admin":
+          return Role.ADMIN
+      case "user":
+          return Role.USER
+      default:
+          return Role.USER
+  }
+}
+
+export function getDeliveryType(delivery_type: string) {
+  switch (delivery_type) {
+      case "door_to_terminal":
+          return DeliveryType.DOOR_TO_TERMINAL
+      case "door_to_door":
+          return DeliveryType.DOOR_TO_DOOR
+      default:
+          return DeliveryType.DOOR_TO_DOOR
+  }
+}
+
+export function getNumberFromString(str: string) {
+  return parseInt(str) || -1;
 }
 
 /**
@@ -80,3 +113,4 @@ export function getPriorityIcon(priority: Task["priority"]) {
 
   return priorityIcons[priority] || CircleIcon
 }
+

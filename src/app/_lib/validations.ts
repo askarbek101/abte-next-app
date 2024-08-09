@@ -27,6 +27,7 @@ export const searchParamsSchema = z.object({
 
 // Create Task Schema
 export const createTaskSchema = z.object({
+  code: z.string(),
   description: z.string(),
   invoice_url: z.string(),
   label: z.enum(LabelEnum.enumValues),
@@ -75,6 +76,7 @@ export const createTaskSchema = z.object({
 
 // Update Task Schema
 export const updateTaskSchema = z.object({
+  code: z.string(),
   description: z.string(),
   invoice_url: z.string(),
   label: z.enum(LabelEnum.enumValues),

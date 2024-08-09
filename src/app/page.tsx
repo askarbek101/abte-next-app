@@ -2,10 +2,9 @@
 
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { CreateTaskSchema } from "./_lib/validations"
-import { generateOrderDetailPdf } from "@/generator/pdf/core"
 import { DeliveryType, Task, Priority, Role, Status, Label } from "@/types/core"
 import { calculateVolume, calculatePrice } from "@/calculator/core"
+import { generateTaskPdfByTask } from "@/generator/pdf/core"
 
 
 export default function HomePage() {
@@ -21,13 +20,13 @@ export default function HomePage() {
     const volume = await calculateVolume(height, width, length)
     const price = await calculatePrice(volume, weight)
 
-    const order : Task = {
+    const task : Task = {
       id: "r6nIYPeTah4v23",
       code: "T1231",
       description: "Order Number",
       invoice_url: "https://utfs.io/f/0bd89e34-9195-4f1a-a545-4ee4ab1184e0-m8t5f8.pdf",
       label: Label.FEATURE,
-      status: Status.CREATED,
+      status: Status.TODO,
       priority: Priority.LOW,
       volume: volume,
       height: height,
@@ -52,7 +51,8 @@ export default function HomePage() {
         email: "payer@example.com",
         phone: "77003029701",
         address: "Kazakhstan, Almaty, 100000, Seifulin 456",
-        role: Role.USER
+        role: Role.USER,
+        password: "password"
       },
       recipient: {
         id: "2",
@@ -60,7 +60,8 @@ export default function HomePage() {
         email: "recipient@example.com",
         phone: "77711230333",
         address: "Kazakhstan, Almaty, 100000, Panfilova 83",
-        role: Role.USER
+        role: Role.USER,
+        password: "password"
       },
       sender: {
         id: "3",
@@ -68,7 +69,8 @@ export default function HomePage() {
         email: "sender@example.com",
         phone: "87029555233",
         address: "Kazakhstan, Almaty, 100000, Abay 123",
-        role: Role.USER
+        role: Role.USER,
+        password: "password"
       },
       insurance_cost: 10,
       number_of_packages: 1,
@@ -77,7 +79,7 @@ export default function HomePage() {
       updatedAt: new Date()
     }
     
-    var pdfBytes = await generateOrderDetailPdf(order);
+    var pdfBytes = await generateTaskPdfByTask(task);
     // open pdf in new tab
     window.open(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })), '_blank');
   }

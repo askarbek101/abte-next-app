@@ -47,7 +47,7 @@ export const RecipientTable = pgTable('recipient', {
 
 export const TaskTable = pgTable('task', {
   id: uuid('id').primaryKey().defaultRandom(),
-  code: varchar('code', { length: 100 }).notNull(),
+  code: varchar('code', { length: 100 }).notNull().unique(),
   description: text('description').notNull(),
   invoice_url: varchar('invoice_url', { length: 255 }).notNull(),
   label: LabelEnum('label').notNull(),
@@ -72,8 +72,18 @@ export const TaskTable = pgTable('task', {
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 });
 
-export type TaskTableType = typeof TaskTable;
-export type CityTableType = typeof CityTable;
-export type SenderTableType = typeof SenderTable;
-export type PayerTableType = typeof PayerTable;
-export type RecipientTableType = typeof RecipientTable;
+export type TaskTableInsert = typeof TaskTable.$inferInsert;
+export type TaskTableSelect = typeof TaskTable.$inferSelect;
+
+export type RecipientTableInsert = typeof RecipientTable.$inferInsert;
+export type RecipientTableSelect = Omit<typeof RecipientTable.$inferSelect, 'password'>
+
+export type PayerTableInsert = typeof PayerTable.$inferInsert;
+export type PayerTableSelect = Omit<typeof PayerTable.$inferSelect, 'password'>
+
+export type SenderTableInsert = typeof SenderTable.$inferInsert;
+export type SenderTableSelect = Omit<typeof SenderTable.$inferSelect, 'password'>
+
+export type CityTableInsert = typeof CityTable.$inferInsert;
+export type CityTableSelect = typeof CityTable.$inferSelect;
+

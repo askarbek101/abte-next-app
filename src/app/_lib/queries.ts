@@ -2,17 +2,17 @@ import "server-only"
 
 import { unstable_noStore as noStore } from "next/cache"
 import { db } from "@/db"
-import { CityTable, PayerTable, RecipientTable, SenderTable, TaskTable } from "@/db/schema"
-import { Task } from "@/types/core"
+import { CityTable, CityTableSelect, PayerTable, PayerTableSelect, RecipientTable, RecipientTableSelect, SenderTable, SenderTableSelect, TaskTable } from "@/db/schema"
+import { City, Payer, Task } from "@/types/core"
 import { type DrizzleWhere } from "@/types"
 import { eq, and, asc, count, desc, gte, lte, or, sql, type SQL } from "drizzle-orm"
 
 import { filterColumn } from "@/lib/filter-column"
 
 import { type GetTasksSchema } from "./validations"
-import { getLabel, getStatus, getPriority, getDeliveryType, getRole, getNumberFromString } from "@/utils/core"
+import { getDeliveryType, getLabel, getNumberFromString, getPriority, getRole, getStatus } from "./utils"
 
-export async function getTasks(input: GetTasksSchema) {
+export async function getTasks(input: GetTasksSchema) { 
   noStore()
   const { page, per_page, sort, description, invoice_url, status, priority, height, width, length, weight, volume, price, operator, from, to, code, createdAt, updatedAt, id  } =
     input
@@ -257,6 +257,23 @@ export async function getTasks(input: GetTasksSchema) {
     return { data: [], pageCount: 0 }
   }
 }
+
+export async function getCity(name: string) : Promise<CityTableSelect | undefined> {
+  return await db.select().from(CityTable).where(eq(CityTable.name, name)).limit(1).execute().then(res => res[0]);
+}
+
+export async function getPayer(id: string) : Promise<PayerTableSelect | undefined> {
+  return await db.select().from(PayerTable).where(eq(PayerTable.id, id)).limit(1).execute().then(res => res[0]);
+}
+
+export async function getRecipient(id: string) : Promise<RecipientTableSelect | undefined> {
+  return await db.select().from(RecipientTable).where(eq(RecipientTable.id, id)).limit(1).execute().then(res => res[0]);
+}
+
+export async function getSender(id: string) : Promise<SenderTableSelect | undefined> {
+  return await db.select().from(SenderTable).where(eq(SenderTable.id, id)).limit(1).execute().then(res => res[0]);
+}
+
 
 export async function getTaskCountByStatus() {
   noStore()

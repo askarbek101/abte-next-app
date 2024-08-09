@@ -12,6 +12,7 @@ export function generateRandomPayer() : Payer {
         role: Role.USER,
         bin: faker.random.alphaNumeric(10),
         abte_id: faker.random.alphaNumeric(10),
+        password: faker.internet.password(),
     }
 }
 
@@ -23,6 +24,7 @@ export function generateRandomRecipient() : Recipient {
         phone: "7777777777",
         address: faker.address.streetAddress(),
         role: Role.USER,
+        password: faker.internet.password(),
     }
 } 
 
@@ -34,5 +36,6 @@ export function generateRandomSender() : Sender {
         phone: "7777777777",
         address: faker.address.streetAddress(),
         role: Role.USER,
+        password: faker.internet.password(),
     }
 }
