@@ -50,10 +50,6 @@ export async function formatPhoneNumber(phoneNumber: string): Promise<string> {
   }
 
 
-export async function getNumberFromString(str: string) {
-  return parseInt(str) || -1;
-}
-
 
 export async function GetCreateTaskBySchema(input: CreateTaskSchema): Promise<TaskTableInsert> {
   const code = `TASK-${customAlphabet("0123456789", 4)()}`;
